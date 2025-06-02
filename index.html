@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLP ABU 2030 - Interaktiver Schullehrplan</title>
+    <title>SLP ABU 2030 - Interaktives Branching System</title>
     <style>
+        :root {
+            --primary: #e62429;
+            --secondary: #1e1e1e;
+            --accent: #ffd700;
+            --bg-dark: #0a0a0a;
+            --bg-light: #f5f5f5;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --gradient: linear-gradient(135deg, #e62429 0%, #ff6b6b 100%);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,1017 +23,1419 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #2d3748 100%);
-            color: #e2e8f0;
-            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
         .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Start Screen */
+        .start-screen {
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-            position: relative;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
         }
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
-        }
-
-        @keyframes twinkle {
-            from { opacity: 0.3; transform: scale(1); }
-            to { opacity: 1; transform: scale(1.2); }
-        }
-
-        .main-content {
-            z-index: 10;
+        .hero {
             text-align: center;
-            max-width: 1200px;
-            width: 100%;
+            animation: fadeIn 1s ease-out;
         }
 
-        .logo {
+        .hero h1 {
             font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, #00d4ff, #0099cc, #0066ff);
+            font-weight: bold;
+            background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
-        .subtitle {
+        .hero .tagline {
             font-size: 1.2rem;
-            color: #94a3b8;
-            margin-bottom: 15px;
+            color: var(--accent);
+            margin-bottom: 30px;
             font-style: italic;
         }
 
-        .intergalactic-quote {
-            font-size: 1.1rem;
-            color: #fbbf24;
-            margin-bottom: 30px;
-            padding: 15px;
-            border: 1px solid #fbbf24;
-            border-radius: 10px;
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        .description {
+        .hero .description {
             font-size: 1rem;
-            color: #cbd5e1;
-            margin-bottom: 40px;
-            line-height: 1.6;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.8;
         }
 
-        .options {
+        /* Buttons */
+        .button-group {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
         }
 
-        .option-card {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border: 2px solid #475569;
-            border-radius: 15px;
-            padding: 30px;
-            min-width: 250px;
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: none;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            background: var(--secondary);
+            color: var(--text-light);
+            border: 2px solid var(--primary);
         }
 
-        .option-card:hover {
-            transform: translateY(-5px);
-            border-color: #00d4ff;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(230, 36, 41, 0.4);
         }
 
-        .option-card::before {
+        .btn:before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            background: rgba(255, 255, 255, 0.2);
             transition: left 0.5s;
         }
 
-        .option-card:hover::before {
+        .btn:hover:before {
             left: 100%;
         }
 
-        .option-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #00d4ff;
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 40px 0;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .screen-header h2 {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
 
-        .option-description {
-            color: #94a3b8;
-            line-height: 1.4;
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
-        .back-nav {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: linear-gradient(135deg, #1e293b, #334155);
-            border: 1px solid #475569;
-            color: #e2e8f0;
-            padding: 10px 20px;
-            border-radius: 8px;
+        .card {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            padding: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-right: 10px;
-            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-btn:hover {
-            background: linear-gradient(135deg, #334155, #475569);
-            border-color: #00d4ff;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(230, 36, 41, 0.3);
+            border-color: var(--accent);
         }
 
-        .breadcrumb {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            font-size: 0.9rem;
-            color: #94a3b8;
-            z-index: 100;
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
         }
 
-        .years-grid {
+        .card p {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        /* Sprachhandlung Display */
+        .sprachhandlung-container {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .sprachhandlung-header {
+            margin-bottom: 25px;
+        }
+
+        .sprachhandlung-header h3 {
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .sprachhandlung-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(230, 36, 41, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Competence Grid */
+        .competence-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
-        .year-card {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border: 2px solid #475569;
-            border-radius: 15px;
-            padding: 25px;
-            cursor: pointer;
+        .competence-button {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid var(--primary);
+            padding: 20px;
+            border-radius: 5px;
             transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .year-card:hover {
-            transform: translateY(-3px);
-            border-color: #00d4ff;
-            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
-        }
-
-        .theme-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .theme-card {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border: 2px solid #475569;
-            border-radius: 15px;
-            padding: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+            position: relative;
         }
 
-        .theme-card:hover {
+        .competence-button:hover {
             transform: translateY(-3px);
-            border-color: #00d4ff;
-            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(230, 36, 41, 0.3);
+            border-color: var(--accent);
         }
 
-        .competency-section {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid #475569;
+        .competence-button.active {
+            border-color: var(--accent);
+            background: rgba(255, 215, 0, 0.05);
         }
 
-        .competency-title {
-            font-size: 1.3rem;
-            color: #00d4ff;
-            margin-bottom: 15px;
+        .competence-button h4 {
+            color: var(--accent);
+            margin: 0;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .competency-list {
-            list-style: none;
-            padding-left: 0;
+        .competence-preview {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
         }
 
-        .competency-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
-            color: #cbd5e1;
+        .expand-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: transform 0.3s ease;
         }
 
-        .scaffold-section {
+        .competence-button.active .expand-icon {
+            transform: rotate(90deg);
+            color: var(--accent);
+        }
+
+        .competence-details {
             display: none;
             margin-top: 20px;
-        }
-
-        .scaffold-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .scaffold-tab {
-            background: #475569;
-            color: #e2e8f0;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .scaffold-tab.active {
-            background: #00d4ff;
-            color: #0f1419;
-        }
-
-        .scaffold-content {
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 10px;
             padding: 20px;
-            display: none;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            animation: fadeIn 0.3s ease;
         }
 
-        .scaffold-content.active {
+        .competence-details.active {
             display: block;
         }
 
-        .hidden {
+        .competence-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .competence-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .competence-list li:before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .competence-meta {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        /* Authentic Tasks */
+        .tasks-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+        }
+
+        .tasks-section h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .task-card {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateX(10px);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .task-level {
+            display: inline-block;
+            padding: 3px 8px;
+            margin-right: 10px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+
+        .level-g {
+            background: #4caf50;
+            color: white;
+        }
+
+        .level-e {
+            background: #ff9800;
+            color: white;
+        }
+
+        /* Dashboard Button */
+        .dashboard-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+            animation: pulse 2s infinite;
+        }
+
+        .dashboard-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+            }
+            100% {
+                box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            }
+        }
+
+        /* Dashboard Modal */
+        .dashboard-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .dashboard-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .dashboard-content {
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            max-width: 1400px;
+            width: 100%;
+            max-height: none;
+            overflow-y: visible;
+            padding: 40px;
+            position: relative;
+            margin: auto;
+        }
+
+        .dashboard-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+        }
+
+        /* Tabs */
+        .sprachmodi-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 25px;
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(230, 36, 41, 0.2);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .tab-content {
             display: none;
         }
 
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Sprachmodus Sections */
+        .sprachmodus-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(30, 30, 30, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .sprachmodus-section h4 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .jahr-column {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid var(--primary);
+        }
+
+        .jahr-column h5 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .kompetenz-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .kompetenz-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .kompetenz-item.level-g {
+            border-left: 4px solid #4caf50;
+        }
+
+        .kompetenz-item.level-e {
+            border-left: 4px solid #ff9800;
+        }
+
+        .level-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .kompetenz-item p {
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+
+        .kompetenz-item small {
+            display: block;
+            opacity: 0.7;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .kompetenz-item small:last-child {
+            color: var(--accent);
+            opacity: 1;
+        }
+
+        /* Info Points */
+        .info-buttons-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .info-point-btn {
+            padding: 12px 30px;
+            background: var(--secondary);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .info-point-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .info-point-btn.active:hover {
+            background: var(--accent);
+            transform: translateY(0);
+        }
+
+        /* Scaffolds Section */
+        .scaffolds-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(30, 30, 30, 0.3);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+        }
+        
+        .scaffolds-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .scaffolds-section h3 {
+            margin-bottom: 20px;
+        }
+
+        .scaffolds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .scaffold-box {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .scaffold-box h4 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .scaffold-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .scaffold-box li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .scaffold-box li:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* Zirkularität Section */
+        .zirkularitaet-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+        }
+        
+        .zirkularitaet-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .zirkularitaet-section h3 {
+            margin-bottom: 20px;
+        }
+
+        .zirkularitaet-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .zirkularitaet-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .zirkularitaet-item:before {
+            content: '↻';
+            position: absolute;
+            left: 10px;
+            top: 20px;
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .zirkularitaet-item strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .zirkularitaet-item p {
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 25px;
+            background: var(--secondary);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .logo {
+            .hero h1 {
                 font-size: 2.5rem;
             }
             
-            .options {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .competence-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scaffolds-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
                 flex-direction: column;
-                align-items: center;
             }
             
-            .option-card {
-                min-width: 90%;
+            .progression-grid {
+                grid-template-columns: 1fr;
             }
             
-            .back-nav {
-                position: static;
-                margin-bottom: 20px;
+            .sprachmodi-tabs {
+                flex-direction: column;
             }
             
-            .breadcrumb {
-                position: static;
-                text-align: center;
-                margin-bottom: 15px;
+            .tab-btn {
+                width: 100%;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    
-    <div class="back-nav" id="backNav" style="display: none;">
-        <button class="nav-btn" onclick="goBack()">← Zurück</button>
-        <button class="nav-btn" onclick="goToStart()">🏠 Start</button>
-    </div>
-    
-    <div class="breadcrumb" id="breadcrumb"></div>
-    
-    <div class="container">
-        <div class="main-content">
-            <!-- Start Screen -->
-            <div id="startScreen">
-                <h1 class="logo">SLP ABU 2030</h1>
-                <p class="subtitle">Schullehrplan Allgemeinbildung</p>
-                <div class="intergalactic-quote">
-                    "Im unendlichen Universum des Lernens sind wir alle Entdecker auf der Reise zu neuen Welten des Wissens."
-                </div>
-                <div class="description">
-                    Der neue Schullehrplan ABU 2030 integriert digitale Kompetenzen, KI-Literacy und zukunftsorientierte Schlüsselkompetenzen für eine sich wandelnde Arbeitswelt. Wählen Sie Ihren Bildungsweg:
-                </div>
-                <div class="options">
-                    <div class="option-card" onclick="selectEducationType('eba')">
-                        <div class="option-title">EBA</div>
-                        <div class="option-description">
-                            Eidgenössisches Berufsattest<br>
-                            2-jährige berufliche Grundbildung<br>
-                            Fokus auf praktische Kompetenzen
-                        </div>
-                    </div>
-                    <div class="option-card" onclick="selectEducationType('efz')">
-                        <div class="option-title">EFZ</div>
-                        <div class="option-description">
-                            Eidgenössisches Fähigkeitszeugnis<br>
-                            3- oder 4-jährige berufliche Grundbildung<br>
-                            Erweiterte Kompetenzen und Anschlussmöglichkeiten
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EFZ Duration Selection -->
-            <div id="efzDurationScreen" class="hidden">
-                <h2 class="logo" style="font-size: 2.5rem;">EFZ Ausbildung</h2>
-                <div class="description">
-                    Wählen Sie die Dauer Ihrer EFZ-Ausbildung:
-                </div>
-                <div class="options">
-                    <div class="option-card" onclick="selectDuration('efz', 3)">
-                        <div class="option-title">3-jährige EFZ</div>
-                        <div class="option-description">
-                            Dreijährige berufliche Grundbildung<br>
-                            Umfassende Kompetenzen<br>
-                            Direkter Berufseinstieg oder Weiterbildung
-                        </div>
-                    </div>
-                    <div class="option-card" onclick="selectDuration('efz', 4)">
-                        <div class="option-title">4-jährige EFZ</div>
-                        <div class="option-description">
-                            Vierjährige berufliche Grundbildung<br>
-                            Vertiefte Kompetenzen<br>
-                            BMS-Möglichkeit, erweiterte Anschlüsse
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Years Selection -->
-            <div id="yearsScreen" class="hidden">
-                <h2 class="logo" style="font-size: 2.5rem;" id="yearsTitle">Lehrjahre</h2>
-                <div class="years-grid" id="yearsGrid">
-                    <!-- Years will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Themes Selection -->
-            <div id="themesScreen" class="hidden">
-                <h2 class="logo" style="font-size: 2.5rem;" id="themesTitle">Themen</h2>
-                <div class="theme-grid" id="themesGrid">
-                    <!-- Themes will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Theme Detail -->
-            <div id="themeDetailScreen" class="hidden">
-                <h2 class="logo" style="font-size: 2rem;" id="themeDetailTitle">Thema Details</h2>
-                
-                <div class="competency-section">
-                    <div class="competency-title">
-                        🗣️ Sprach- und Kommunikationskompetenzen
-                    </div>
-                    <ul class="competency-list" id="languageCompetencies">
-                        <!-- Populated by JavaScript -->
-                    </ul>
-                </div>
-
-                <div class="competency-section">
-                    <div class="competency-title">
-                        💻 Digitale Kompetenzen
-                    </div>
-                    <ul class="competency-list" id="digitalCompetencies">
-                        <!-- Populated by JavaScript -->
-                    </ul>
-                </div>
-
-                <div class="competency-section">
-                    <div class="competency-title">
-                        🏛️ Gesellschaftskompetenzen
-                    </div>
-                    <ul class="competency-list" id="societyCompetencies">
-                        <!-- Populated by JavaScript -->
-                    </ul>
-                </div>
-
-                <div class="options" style="margin-top: 30px;">
-                    <div class="option-card" onclick="showScaffolds()">
-                        <div class="option-title">🔧 Scaffolds anzeigen</div>
-                        <div class="option-description">
-                            Unterstützungstools und Hilfsmittel für die Umsetzung
-                        </div>
-                    </div>
-                </div>
-
-                <div class="scaffold-section" id="scaffoldSection">
-                    <div class="scaffold-tabs">
-                        <button class="scaffold-tab active" onclick="showScaffoldContent('sprache')">Sprache</button>
-                        <button class="scaffold-tab" onclick="showScaffoldContent('digital')">Digital</button>
-                        <button class="scaffold-tab" onclick="showScaffoldContent('gesellschaft')">Gesellschaft</button>
-                        <button class="scaffold-tab" onclick="showScaffoldContent('schluessel')">Schlüssel</button>
-                        <button class="scaffold-tab" onclick="showScaffoldContent('wandel')">Wandel</button>
-                    </div>
-                    
-                    <div class="scaffold-content active" id="sprache-content">
-                        <h4>🗣️ Sprachliche Scaffolds</h4>
-                        <ul id="sprache-scaffolds"></ul>
-                    </div>
-                    
-                    <div class="scaffold-content" id="digital-content">
-                        <h4>💻 Digitale Scaffolds</h4>
-                        <ul id="digital-scaffolds"></ul>
-                    </div>
-                    
-                    <div class="scaffold-content" id="gesellschaft-content">
-                        <h4>🏛️ Gesellschaftliche Scaffolds</h4>
-                        <ul id="gesellschaft-scaffolds"></ul>
-                    </div>
-                    
-                    <div class="scaffold-content" id="schluessel-content">
-                        <h4>🔑 Schlüsselkompetenzen</h4>
-                        <ul id="schluessel-scaffolds"></ul>
-                    </div>
-                    
-                    <div class="scaffold-content" id="wandel-content">
-                        <h4>🌟 Wandel & Zukunft</h4>
-                        <ul id="wandel-scaffolds"></ul>
-                    </div>
+    <!-- Start Screen -->
+    <div class="start-screen screen active" id="start">
+        <div class="container">
+            <div class="hero">
+                <h1>SLP ABU 2030</h1>
+                <p class="tagline">"Die Zukunft der Bildung beginnt heute - Bereit für die intergalaktische Reise?"</p>
+                <p class="description">
+                    Willkommen im interaktiven Schullehrplan für die Allgemeinbildung. 
+                    Navigiere durch Kompetenzen, entdecke Sprachhandlungen und gestalte die Zukunft des Lernens.
+                </p>
+                <div class="button-group">
+                    <button class="btn" onclick="showScreen('eba-years')">EBA</button>
+                    <button class="btn" onclick="showScreen('efz-choice')">EFZ</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- EBA Years -->
+    <div class="screen" id="eba-years">
+        <div class="container">
+            <div class="screen-header">
+                <h2>EBA - Wähle dein Lehrjahr</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" onclick="showThemes('eba', 1)">
+                    <h3>1. Lehrjahr</h3>
+                    <p>Grundlagen und Orientierung im Berufsleben</p>
+                </div>
+                <div class="card" onclick="showThemes('eba', 2)">
+                    <h3>2. Lehrjahr</h3>
+                    <p>Vertiefung und Anwendung</p>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showScreen('start')">← Zurück zum Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EFZ Choice -->
+    <div class="screen" id="efz-choice">
+        <div class="container">
+            <div class="screen-header">
+                <h2>EFZ - Wähle deine Ausbildungsdauer</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" onclick="showScreen('efz3-years')">
+                    <h3>3-jährige Lehre</h3>
+                    <p>Kompakte Berufsausbildung mit Fokus</p>
+                </div>
+                <div class="card" onclick="showScreen('efz4-years')">
+                    <h3>4-jährige Lehre</h3>
+                    <p>Erweiterte Ausbildung mit Vertiefung</p>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showScreen('start')">← Zurück zum Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EFZ 3 Years -->
+    <div class="screen" id="efz3-years">
+        <div class="container">
+            <div class="screen-header">
+                <h2>EFZ 3-jährig - Wähle dein Lehrjahr</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" onclick="showThemes('efz3', 1)">
+                    <h3>1. Lehrjahr</h3>
+                    <p>Ins Berufsleben einsteigen</p>
+                </div>
+                <div class="card" onclick="showThemes('efz3', 2)">
+                    <h3>2. Lehrjahr</h3>
+                    <p>Kompetenzen erweitern</p>
+                </div>
+                <div class="card" onclick="showThemes('efz3', 3)">
+                    <h3>3. Lehrjahr</h3>
+                    <p>Expertise entwickeln</p>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showScreen('efz-choice')">← Zurück</button>
+                <button class="nav-btn" onclick="showScreen('start')">Zum Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Screen -->
+    <div class="screen" id="themes">
+        <div class="container">
+            <div class="screen-header">
+                <h2 id="themes-title">Themen</h2>
+            </div>
+            <div class="cards-grid" id="themes-grid">
+                <!-- Themes will be inserted dynamically -->
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goBack()">← Zurück</button>
+                <button class="nav-btn" onclick="showScreen('start')">Zum Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sprachhandlungen Screen -->
+    <div class="screen" id="sprachhandlungen">
+        <div class="container">
+            <div class="screen-header">
+                <h2 id="sprachhandlungen-title">Sprachhandlungen</h2>
+                <p style="opacity: 0.8; margin-top: 10px;">Integrierte Kompetenzentwicklung durch authentische Sprachhandlungen</p>
+            </div>
+            
+            <div id="sprachhandlungen-content">
+                <!-- Content will be inserted dynamically -->
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goBack()">← Zurück</button>
+                <button class="nav-btn" onclick="showScreen('start')">Zum Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Button -->
+    <button class="dashboard-btn" onclick="toggleDashboard()" title="Zirkularitäts-Dashboard">
+        ↻
+    </button>
+
+    <!-- Dashboard Modal -->
+    <div class="dashboard-modal" id="dashboard-modal">
+        <div class="dashboard-content">
+            <button class="dashboard-close" onclick="toggleDashboard()">×</button>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">Zirkularitäts-Dashboard</h2>
+            <p style="margin-bottom: 20px;">Übersicht über die spiralförmige Kompetenzentwicklung</p>
+            
+            <div class="circularity-matrix">
+                <table class="circularity-table">
+                    <thead>
+                        <tr>
+                            <th>Sprachhandlung</th>
+                            <th>1. Lehrjahr</th>
+                            <th>2. Lehrjahr</th>
+                            <th>3. Lehrjahr</th>
+                            <th>Vernetzung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dokumente analysieren</td>
+                            <td><span class="circularity-link" title="Betriebliche Dokumente"></span></td>
+                            <td><span class="circularity-link" title="Verträge verstehen"></span></td>
+                            <td><span class="circularity-link" title="Rechtliche Analysen"></span></td>
+                            <td>Recht → Wirtschaft → Politik</td>
+                        </tr>
+                        <tr>
+                            <td>Digital kommunizieren</td>
+                            <td><span class="circularity-link" title="E-Mail, Chat"></span></td>
+                            <td><span class="circularity-link" title="Kollaboration"></span></td>
+                            <td><span class="circularity-link" title="Führung"></span></td>
+                            <td>Technologie → Globalisierung</td>
+                        </tr>
+                        <tr>
+                            <td>Finanzplanung</td>
+                            <td><span class="circularity-link" title="Budget erstellen"></span></td>
+                            <td><span class="circularity-link" title="Investieren"></span></td>
+                            <td><span class="circularity-link" title="Vorsorge"></span></td>
+                            <td>Wirtschaft → Recht → Ethik</td>
+                        </tr>
+                        <tr>
+                            <td>Argumentieren</td>
+                            <td><span class="circularity-link" title="Mündlich"></span></td>
+                            <td><span class="circularity-link" title="Schriftlich"></span></td>
+                            <td><span class="circularity-link" title="Multimedial"></span></td>
+                            <td>Ethik → Politik → Kultur</td>
+                        </tr>
+                        <tr>
+                            <td>Konflikte lösen</td>
+                            <td><span class="circularity-link" title="Im Team"></span></td>
+                            <td><span class="circularity-link" title="Mit Kunden"></span></td>
+                            <td><span class="circularity-link" title="Mediation"></span></td>
+                            <td>Identität → Ethik → Recht</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--accent); margin-bottom: 15px;">Kompetenzvernetzung</h3>
+                <p>Jede Sprachhandlung verbindet multiple Kompetenzbereiche:</p>
+                <ul style="margin-top: 15px; padding-left: 20px;">
+                    <li>🗣️ Sprachliche Kompetenzen entwickeln sich von rezeptiv zu produktiv zu interaktiv</li>
+                    <li>💻 Digitale Tools werden progressiv komplexer eingesetzt</li>
+                    <li>🌍 Gesellschaftliche Aspekte erweitern sich vom persönlichen zum globalen Kontext</li>
+                    <li>🔑 Schlüsselkompetenzen vertiefen sich spiral über alle Lehrjahre</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Global state
-        let currentPath = [];
-        let currentEducationType = null;
-        let currentDuration = null;
-        let currentYear = null;
-        let currentTheme = null;
+        let navigationHistory = ['start'];
+        let currentEducation = '';
+        let currentYear = '';
+        let currentTheme = '';
 
-        // Data structure based on documents
-        const curricula = {
-            eba: {
-                duration: 2,
-                years: {
-                    1: {
-                        title: "1. Lehrjahr EBA",
-                        themes: [
-                            {
-                                id: "berufseinstieg",
-                                title: "Ins Berufsleben einsteigen",
-                                description: "Orientierung in Betrieb und Schule, erste Schritte in der Arbeitswelt"
-                            },
-                            {
-                                id: "kommunikation",
-                                title: "Kommunikation im Alltag",
-                                description: "Grundlagen der Kommunikation und des Zusammenlebens"
-                            },
-                            {
-                                id: "gesundheit",
-                                title: "Gesund leben und arbeiten",
-                                description: "Gesundheitsbewusstsein und Work-Life-Balance"
-                            }
-                        ]
-                    },
-                    2: {
-                        title: "2. Lehrjahr EBA",
-                        themes: [
-                            {
-                                id: "verantwortung",
-                                title: "Verantwortung übernehmen",
-                                description: "Eigenverantwortung und gesellschaftliche Teilhabe"
-                            },
-                            {
-                                id: "zukunft",
-                                title: "Zukunft gestalten",
-                                description: "Planung und Perspektiven nach der Ausbildung"
-                            },
-                            {
-                                id: "nachhaltigkeit",
-                                title: "Nachhaltig handeln",
-                                description: "Umweltbewusstsein und nachhaltiger Konsum"
-                            }
-                        ]
-                    }
-                }
-            },
-            efz: {
-                3: {
-                    years: {
-                        1: {
-                            title: "1. Lehrjahr EFZ (3-jährig)",
-                            themes: [
-                                {
-                                    id: "berufseinstieg",
-                                    title: "Ins Berufsleben einsteigen",
-                                    description: "Orientierung in Betrieb und Schule, erste Schritte in der Arbeitswelt"
-                                },
-                                {
-                                    id: "kommunikation",
-                                    title: "Kommunikation und Zusammenarbeit",
-                                    description: "Erweiterte Kommunikationskompetenzen und Teamarbeit"
-                                },
-                                {
-                                    id: "digital",
-                                    title: "Digital kompetent handeln",
-                                    description: "Grundlagen digitaler Kompetenzen und KI-Literacy"
-                                }
-                            ]
-                        },
-                        2: {
-                            title: "2. Lehrjahr EFZ (3-jährig)",
-                            themes: [
-                                {
-                                    id: "gesellschaft",
-                                    title: "Gesellschaft mitgestalten",
-                                    description: "Politische Teilhabe und gesellschaftliche Verantwortung"
-                                },
-                                {
-                                    id: "wirtschaft",
-                                    title: "Wirtschaftlich denken und handeln",
-                                    description: "Ökonomische Zusammenhänge und Konsumverhalten"
-                                },
-                                {
-                                    id: "kultur",
-                                    title: "Kultur und Vielfalt",
-                                    description: "Kulturelle Kompetenz und Diversität"
-                                }
-                            ]
-                        },
-                        3: {
-                            title: "3. Lehrjahr EFZ (3-jährig)",
-                            themes: [
-                                {
-                                    id: "innovation",
-                                    title: "Innovation und Wandel",
-                                    description: "Technologischer Wandel und Anpassungsfähigkeit"
-                                },
-                                {
-                                    id: "nachhaltigkeit",
-                                    title: "Nachhaltig handeln",
-                                    description: "Nachhaltigkeit und Zukunftsverantwortung"
-                                },
-                                {
-                                    id: "zukunft",
-                                    title: "Zukunft gestalten",
-                                    description: "Lebensplanung und Weiterbildung"
-                                }
-                            ]
-                        }
-                    }
+        const themes = {
+            'efz3-1': [
+                {
+                    title: 'Ins Berufsleben einsteigen',
+                    description: 'Sich in der Berufslehre orientieren, Beziehungen aufbauen und Verantwortung übernehmen'
                 },
-                4: {
-                    years: {
-                        1: {
-                            title: "1. Lehrjahr EFZ (4-jährig)",
-                            themes: [
-                                {
-                                    id: "berufseinstieg",
-                                    title: "Ins Berufsleben einsteigen",
-                                    description: "Orientierung in Betrieb und Schule, erste Schritte in der Arbeitswelt"
-                                },
-                                {
-                                    id: "kommunikation",
-                                    title: "Kommunikation und Zusammenarbeit",
-                                    description: "Grundlagen der Kommunikation und des Zusammenlebens"
-                                },
-                                {
-                                    id: "digital",
-                                    title: "Digital kompetent handeln",
-                                    description: "Digitale Grundkompetenzen und KI-Literacy"
-                                }
-                            ]
-                        },
-                        2: {
-                            title: "2. Lehrjahr EFZ (4-jährig)",
-                            themes: [
-                                {
-                                    id: "gesellschaft",
-                                    title: "Gesellschaft verstehen",
-                                    description: "Gesellschaftliche Strukturen und Prozesse"
-                                },
-                                {
-                                    id: "wirtschaft",
-                                    title: "Wirtschaftlich denken",
-                                    description: "Ökonomische Grundlagen und Zusammenhänge"
-                                },
-                                {
-                                    id: "recht",
-                                    title: "Recht und Verantwortung",
-                                    description: "Rechtliche Grundlagen und gesellschaftliche Verantwortung"
-                                }
-                            ]
-                        },
-                        3: {
-                            title: "3. Lehrjahr EFZ (4-jährig)",
-                            themes: [
-                                {
-                                    id: "innovation",
-                                    title: "Innovation und Technologie",
-                                    description: "Technologischer Wandel und Innovation"
-                                },
-                                {
-                                    id: "nachhaltigkeit",
-                                    title: "Nachhaltig leben und arbeiten",
-                                    description: "Nachhaltigkeit in allen Lebensbereichen"
-                                },
-                                {
-                                    id: "kultur",
-                                    title: "Kultur und Identität",
-                                    description: "Kulturelle Vielfalt und Identitätsentwicklung"
-                                }
-                            ]
-                        },
-                        4: {
-                            title: "4. Lehrjahr EFZ (4-jährig)",
-                            themes: [
-                                {
-                                    id: "fuehrung",
-                                    title: "Führung und Verantwortung",
-                                    description: "Führungskompetenzen und gesellschaftliche Verantwortung"
-                                },
-                                {
-                                    id: "zukunft",
-                                    title: "Zukunft gestalten",
-                                    description: "Lebensplanung und Weiterbildungsstrategien"
-                                },
-                                {
-                                    id: "globalisierung",
-                                    title: "Global denken, lokal handeln",
-                                    description: "Globale Herausforderungen und lokale Lösungen"
-                                }
-                            ]
-                        }
-                    }
+                {
+                    title: 'Mit Geld umgehen',
+                    description: 'Finanzielle Verantwortung übernehmen und Budget planen'
+                },
+                {
+                    title: 'In einer globalisierten Welt leben',
+                    description: 'Vielfalt verstehen und interkulturell kommunizieren'
                 }
-            }
-        };
-
-        // Theme competencies based on "Ins Berufsleben einsteigen" example
-        const themeCompetencies = {
-            berufseinstieg: {
-                language: [
-                    "Informationen zu rechtlichen Grundlagen aus digitalen und analogen Quellen gezielt entnehmen und nutzen",
-                    "Sich in berufsbezogenen Situationen adressatengerecht ausdrücken (schriftlich/mündlich)",
-                    "Aktiv zuhören und angemessen reagieren in Gesprächen",
-                    "Standpunkte begründet vertreten und strukturiert argumentieren"
-                ],
-                digital: [
-                    "Schulische ICT-Tools datensicher und zweckmässig nutzen",
-                    "Gezielt und kritisch Informationen im Internet recherchieren",
-                    "Mit KI-Tools interagieren und deren Grenzen erkennen",
-                    "Digitale Kommunikationsformen situationsgerecht einsetzen"
-                ],
-                society: [
-                    "Eigenes Ausbildungsmodell im Berufsbildungssystem einordnen",
-                    "Funktion und Wirkung des Lehrvertrags verstehen und anwenden",
-                    "Bei Herausforderungen geeignete Anlaufstellen auswählen",
-                    "Rolle in Gruppen kritisch reflektieren und Verantwortung übernehmen"
-                ]
-            },
-            kommunikation: {
-                language: [
-                    "In verschiedenen Gesprächssituationen aktiv teilnehmen",
-                    "Konflikte konstruktiv und respektvoll bearbeiten",
-                    "Nonverbale Kommunikation deuten und einsetzen",
-                    "Medienkompetenz in der digitalen Kommunikation"
-                ],
-                digital: [
-                    "Digitale Kommunikationstools professionell nutzen",
-                    "Online-Etiquette und Datenschutz beachten",
-                    "Kollaborative Tools für Teamarbeit einsetzen",
-                    "Fake News und Manipulation erkennen"
-                ],
-                society: [
-                    "Verschiedene Perspektiven anerkennen und verstehen",
-                    "Kulturelle Vielfalt als Ressource erkennen",
-                    "Konflikte unter ethischen Grundsätzen lösen",
-                    "Empathie und Toleranz entwickeln"
-                ]
-            }
-        };
-
-        // Scaffolds based on the language modes table
-        const scaffolds = {
-            sprache: [
-                "Lesestruktur und Markierhilfen",
-                "Argumentstruktur und Redemittel",
-                "Satzanfänge und Stichwortkarten",
-                "Gesprächsbausteine und -struktur",
-                "Debattenraster und Perspektivenschema",
-                "Feedbackhilfen und Reflexionsinstrumente",
-                "Textbausteine und Strukturhilfen",
-                "Schreibprozess-Unterstützung"
-            ],
-            digital: [
-                "KI-Analyse-Tools und Übersetzungshilfen",
-                "Transkribieren mit KI und Voice-Tools",
-                "Online-Meeting-Konventionen (Netiquette)",
-                "Prompt-Hilfen für KI-Interaktion",
-                "KI-Bildgenerator und Videotools",
-                "Digitale Kollaborationsplattformen",
-                "Audiofunktionen und Untertitel",
-                "Schneidprogramme und Filter"
-            ],
-            gesellschaft: [
-                "Rollenübersichten und Perspektivenwechsel",
-                "Moderationsgrundlagen",
-                "Projektplanungs-Strukturhilfen",
-                "Qualitätssicherung und Checklisten",
-                "Ablaufpläne für Gruppenprozesse",
-                "Konfliktlösungsstrategien",
-                "Ethische Entscheidungshilfen",
-                "Partizipationsformen"
-            ],
-            schluessel: [
-                "3.2.1 - Zwischen relevanten und irrelevanten Quellen unterscheiden",
-                "3.2.2 - Sich selbst Ziele setzen und adaptiv verhalten",
-                "3.2.3 - Innovative Problemlösungen entwickeln",
-                "3.2.4 - In unterschiedlichen Teams arbeiten",
-                "3.2.5 - Eigene Werthaltungen reflektieren",
-                "3.2.6 - Standpunkte begründen und überzeugen",
-                "3.2.7 - Verschiedene Standpunkte nachvollziehen",
-                "3.2.8 - Lebensphasen planen",
-                "3.2.12 - An gesellschaftlichen Prozessen partizipieren"
-            ],
-            wandel: [
-                "KI-Literacy als neue Kulturtechnik",
-                "Metakognitive Kompetenzen für KI-Nutzung",
-                "Mensch-Maschine-Kollaboration",
-                "Anpassungsfähigkeit in sich wandelnden Arbeitswelten",
-                "Kritisches Denken im digitalen Zeitalter",
-                "Nachhaltigkeit und Zukunftsverantwortung",
-                "Lebenslanges Lernen und Reskilling",
-                "Emotionale Intelligenz in der Digitalisierung"
             ]
         };
 
-        // Initialize stars
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 2 + 's';
-                star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
-                starsContainer.appendChild(star);
-            }
-        }
+        const sprachhandlungen = {
+            'Ins Berufsleben einsteigen': [
+                {
+                    title: 'Betriebliche Dokumente verstehen und meine Rechte kennen',
+                    lebenskontext: 'Ich finde mich im Betrieb und in der Berufsfachschule zurecht',
+                    beschreibung: `Die Lernenden können wichtige betriebliche Dokumente (Lehrvertrag, Arbeitsplan, Hausordnung) lesen und verstehen. 
+                    Sie markieren wichtige Stellen mit einfachen digitalen Werkzeugen (PDF-Reader) und erstellen eine persönliche Übersicht ihrer Rechte und Pflichten. 
+                    Mit Hilfe von Suchfunktionen finden sie Informationen auf Webseiten wie berufsbildung.ch. 
+                    Sie lernen, ihre schulischen E-Mails zu verwalten und den digitalen Kalender für Termine zu nutzen. 
+                    Bei Unklarheiten wissen sie, wen sie fragen können und bereiten ihre Fragen schriftlich vor.`,
+                    kompetenzen: {
+                        sprache: [
+                            'Informationen aus digitalen und analogen Quellen gezielt entnehmen und für konkrete Fragen nutzen',
+                            'In berufsbezogenen Situationen schriftlich oder mündlich adressatengerecht ausdrücken'
+                        ],
+                        gesellschaft: [
+                            'Eigenes Ausbildungsmodell im Berufsbildungssystem einordnen und Übergänge benennen',
+                            'Funktion und Wirkung des Lehrvertrags in konkreten Alltagssituationen anwenden',
+                            'Bei Herausforderungen selbstständig geeignete Anlaufstellen auswählen und Unterstützung einholen'
+                        ],
+                        digital: [
+                            'PDF-Dokumente öffnen, lesen und wichtige Stellen markieren',
+                            'Schulische E-Mail-Konten und Kalender für die eigene Organisation nutzen',
+                            'Mit Suchfunktionen (Ctrl+F) in Dokumenten und auf Webseiten gezielt Informationen finden'
+                        ],
+                        schluessel: [
+                            '3.2.1 - Zwischen relevanten und irrelevanten Quellen und Inhalten unterscheiden',
+                            '3.2.8 - Lebensphasen planen und mit Unwägbarkeiten umgehen',
+                            '3.2.12 - An gesellschaftlichen Prozessen partizipieren und Handlungsspielräume nutzen'
+                        ]
+                    },
+                    sprachmodi: ['Rezeption schriftlich', 'Produktion mündlich', 'Interaktion mündlich'],
+                    aspekte: ['Recht', 'Technologie'],
+                    scaffolds: {
+                        sprache: ['Lesestruktur-Vorlage', 'Markierhilfen für PDF', 'Satzanfänge für E-Mails', 'Gesprächsbausteine'],
+                        digital: ['Tastenkombinationen-Übersicht', 'Screenshot-Anleitung', 'E-Mail-Vorlagen', 'Ordnerstruktur-Beispiel'],
+                        gesellschaft: ['Übersicht Berufsbildungssystem', 'Checkliste Rechte/Pflichten', 'Liste wichtiger Anlaufstellen'],
+                        schluessel: ['Zeitmanagement-Tools', 'Reflexionsfragen', 'Lernstrategien-Karten']
+                    },
+                    zirkularitaet: [
+                        {
+                            thema: 'Mit Geld umgehen',
+                            verbindung: 'Dokumentenanalyse wird auf Finanzunterlagen angewendet'
+                        },
+                        {
+                            thema: 'Verantwortung übernehmen (2. Lj)',
+                            verbindung: 'Rechte aktiv einfordern, nicht nur kennen'
+                        },
+                        {
+                            thema: 'Arbeitsrecht vertiefen (3. Lj)',
+                            verbindung: 'Komplexe Verträge und GAV verstehen'
+                        }
+                    ]
+                },
+                {
+                    title: 'Mein Budget mit digitalen Hilfsmitteln führen',
+                    lebenskontext: 'Ich kann mit meinem Geld umgehen',
+                    beschreibung: `Die Lernenden verstehen ihre erste Lohnabrechnung und können die wichtigsten Abzüge erklären. 
+                    Sie richten sich eine einfache Budget-App oder Excel-Tabelle ein und erfassen ihre monatlichen Einnahmen und Ausgaben. 
+                    Mit Hilfe von Online-Rechnern können sie ausrechnen, wie viel sie sparen müssen für einen Wunsch. 
+                    Bei finanziellen Problemen wissen sie, wo sie auf der Gemeinde-Webseite Informationen finden und wie sie per E-Mail 
+                    einen Termin für eine Beratung vereinbaren können.`,
+                    kompetenzen: {
+                        sprache: [
+                            'Aus Lohnabrechnungen und Budgetplänen relevante Informationen entnehmen und strukturieren',
+                            'Adressatengerechtes schriftliches Feedback zu einem Budgetentwurf verfassen',
+                            'Formulare vollständig und korrekt ausfüllen'
+                        ],
+                        gesellschaft: [
+                            'Eigene und zukünftige Lohnabrechnung verstehen und erklären',
+                            'Lehrlingslohn und Lebenskosten realistisch budgetieren und Ausgaben abstimmen',
+                            'Passende Stelle für finanzielle Unterstützung identifizieren und Schritte einleiten'
+                        ],
+                        digital: [
+                            'Eine Budget-App oder Excel-Tabelle für die eigenen Finanzen einrichten und nutzen',
+                            'Online-Rechner für Sparziele oder Budgetberechnungen verwenden',
+                            'E-Mails für Terminvereinbarungen korrekt formulieren und versenden'
+                        ],
+                        schluessel: [
+                            '3.2.5 - Eigene Werthaltungen und Überzeugungen erkennen',
+                            '3.2.8 - Lebensphasen planen und mit Unwägbarkeiten umgehen',
+                            '3.2.12 - An gesellschaftlichen Prozessen partizipieren'
+                        ]
+                    },
+                    sprachmodi: ['Rezeption schriftlich', 'Interaktion schriftlich', 'Produktion schriftlich'],
+                    aspekte: ['Recht', 'Technologie'],
+                    scaffolds: {
+                        sprache: ['Textbausteine für E-Mails', 'Formular-Ausfüllhilfe', 'Feedback-Struktur', 'Höflichkeitsformeln'],
+                        digital: ['Excel-Vorlagen', 'App-Vergleichstabelle', 'Online-Rechner-Links', 'Datenschutz-Tipps'],
+                        gesellschaft: ['Lohnabrechnung verstehen', 'Budget-Kategorien', 'Beratungsstellen-Übersicht'],
+                        schluessel: ['Zielsetzungs-Methoden', 'Prioritäten-Matrix', 'Spar-Strategien']
+                    },
+                    zirkularitaet: [
+                        {
+                            thema: 'Ins Berufsleben einsteigen',
+                            verbindung: 'Lohnabrechnung als wichtiges Dokument verstehen'
+                        },
+                        {
+                            thema: 'Konsumverhalten reflektieren (2. Lj)',
+                            verbindung: 'Bewusste Kaufentscheidungen treffen'
+                        },
+                        {
+                            thema: 'Vorsorge planen (3. Lj)',
+                            verbindung: 'Langfristige Finanzplanung und Investitionen'
+                        }
+                    ]
+                }
+            ]
+        };
 
-        function updateBreadcrumb() {
-            const breadcrumb = document.getElementById('breadcrumb');
-            if (currentPath.length === 0) {
-                breadcrumb.textContent = 'SLP ABU 2030';
-            } else {
-                breadcrumb.textContent = 'SLP ABU 2030 → ' + currentPath.join(' → ');
-            }
-        }
-
-        function showBackNav() {
-            document.getElementById('backNav').style.display = 'block';
-        }
-
-        function hideBackNav() {
-            document.getElementById('backNav').style.display = 'none';
-        }
-
-        function selectEducationType(type) {
-            currentEducationType = type;
-            currentPath = [type.toUpperCase()];
-            
-            if (type === 'eba') {
-                showYears();
-            } else {
-                showScreen('efzDurationScreen');
-                showBackNav();
-            }
-            updateBreadcrumb();
-        }
-
-        function selectDuration(type, duration) {
-            currentDuration = duration;
-            currentPath.push(`${duration}-jährig`);
-            showYears();
-            updateBreadcrumb();
-        }
-
-        function showYears() {
-            const yearsGrid = document.getElementById('yearsGrid');
-            const yearsTitle = document.getElementById('yearsTitle');
-            
-            yearsGrid.innerHTML = '';
-            
-            let years;
-            if (currentEducationType === 'eba') {
-                years = curricula.eba.years;
-                yearsTitle.textContent = 'EBA Lehrjahre';
-            } else {
-                years = curricula.efz[currentDuration].years;
-                yearsTitle.textContent = `EFZ ${currentDuration}-jährig - Lehrjahre`;
-            }
-            
-            Object.keys(years).forEach(year => {
-                const yearCard = document.createElement('div');
-                yearCard.className = 'year-card';
-                yearCard.innerHTML = `
-                    <h3>${years[year].title}</h3>
-                    <p>${years[year].themes.length} Themen</p>
-                `;
-                yearCard.onclick = () => selectYear(year);
-                yearsGrid.appendChild(yearCard);
-            });
-            
-            showScreen('yearsScreen');
-            showBackNav();
-        }
-
-        function selectYear(year) {
-            currentYear = year;
-            currentPath.push(`${year}. Lehrjahr`);
-            showThemes();
-            updateBreadcrumb();
-        }
-
-        function showThemes() {
-            const themesGrid = document.getElementById('themesGrid');
-            const themesTitle = document.getElementById('themesTitle');
-            
-            themesGrid.innerHTML = '';
-            
-            let themes;
-            if (currentEducationType === 'eba') {
-                themes = curricula.eba.years[currentYear].themes;
-                themesTitle.textContent = `EBA ${currentYear}. Lehrjahr - Themen`;
-            } else {
-                themes = curricula.efz[currentDuration].years[currentYear].themes;
-                themesTitle.textContent = `EFZ ${currentDuration}-jährig ${currentYear}. Lehrjahr - Themen`;
-            }
-            
-            themes.forEach(theme => {
-                const themeCard = document.createElement('div');
-                themeCard.className = 'theme-card';
-                themeCard.innerHTML = `
-                    <h3>${theme.title}</h3>
-                    <p>${theme.description}</p>
-                `;
-                themeCard.onclick = () => selectTheme(theme);
-                themesGrid.appendChild(themeCard);
-            });
-            
-            showScreen('themesScreen');
-        }
-
-        function selectTheme(theme) {
-            currentTheme = theme;
-            currentPath.push(theme.title);
-            showThemeDetail();
-            updateBreadcrumb();
-        }
-
-        function showThemeDetail() {
-            const themeDetailTitle = document.getElementById('themeDetailTitle');
-            themeDetailTitle.textContent = currentTheme.title;
-            
-            // Load competencies
-            const competencies = themeCompetencies[currentTheme.id] || themeCompetencies.berufseinstieg;
-            
-            loadCompetencies('languageCompetencies', competencies.language);
-            loadCompetencies('digitalCompetencies', competencies.digital);
-            loadCompetencies('societyCompetencies', competencies.society);
-            
-            showScreen('themeDetailScreen');
-        }
-
-        function loadCompetencies(elementId, competenciesList) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = '';
-            competenciesList.forEach(competency => {
-                const li = document.createElement('li');
-                li.textContent = competency;
-                element.appendChild(li);
-            });
-        }
-
-        function showScaffolds() {
-            const scaffoldSection = document.getElementById('scaffoldSection');
-            scaffoldSection.style.display = 'block';
-            
-            // Load scaffold content
-            Object.keys(scaffolds).forEach(category => {
-                const scaffoldList = document.getElementById(`${category}-scaffolds`);
-                scaffoldList.innerHTML = '';
-                scaffolds[category].forEach(scaffold => {
-                    const li = document.createElement('li');
-                    li.textContent = scaffold;
-                    scaffoldList.appendChild(li);
-                });
-            });
-        }
-
-        function showScaffoldContent(category) {
-            // Remove active class from all tabs
-            document.querySelectorAll('.scaffold-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active class from all content
-            document.querySelectorAll('.scaffold-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Add active class to selected tab and content
-            event.target.classList.add('active');
-            document.getElementById(`${category}-content`).classList.add('active');
-        }
+        const authenticTasks = {
+            'Betriebliche Dokumente verstehen und meine Rechte kennen': [
+                {
+                    level: 'g',
+                    title: 'Meine digitale Dokumentenmappe',
+                    description: 'Erstelle einen Ordner auf deinem Computer für deine Lehrdokumente. Speichere deinen Lehrvertrag als PDF und markiere mit dem Textmarker-Tool die wichtigsten Rechte (z.B. Arbeitszeiten, Ferien) in Gelb und Pflichten (z.B. Berufsschule besuchen) in Blau. Erstelle eine Word-Liste mit Links zu hilfreichen Webseiten.'
+                },
+                {
+                    level: 'e',
+                    title: 'Rechte-Check mit digitaler Hilfe',
+                    description: 'Vergleiche deinen Arbeitsplan mit den Angaben im Lehrvertrag. Nutze die Suchfunktion (Ctrl+F) auf berufsbildung.ch, um Informationen zu Überstunden zu finden. Schreibe eine E-Mail an deine Berufsbildnerin mit konkreten Fragen zu Unklarheiten. Nutze dabei die Rechtschreibprüfung in Word.'
+                }
+            ],
+            'Mein Budget mit digitalen Hilfsmitteln führen': [
+                {
+                    level: 'g',
+                    title: 'Meine erste Budget-App',
+                    description: 'Lade dir eine kostenlose Budget-App herunter oder erstelle eine einfache Excel-Tabelle. Trage deine monatlichen Einnahmen (Lohn) und festen Ausgaben (Handy, ÖV-Abo) ein. Setze dir ein Sparziel für etwas, das du dir wünschst, und berechne, wie lange du sparen musst.'
+                },
+                {
+                    level: 'e',
+                    title: 'Online-Beratung finden',
+                    description: 'Recherchiere auf der Webseite deiner Gemeinde nach Budgetberatung für Jugendliche. Vergleiche zwei Angebote in einer Tabelle (Öffnungszeiten, Kontakt, kostenlos ja/nein). Verfasse eine höfliche E-Mail, um einen Beratungstermin zu vereinbaren. Speichere die Antwort in deinem E-Mail-Ordner "Finanzen".'
+                }
+            ]
+        };
 
         function showScreen(screenId) {
-            // Hide all screens
-            document.querySelectorAll('.main-content > div').forEach(screen => {
-                screen.classList.add('hidden');
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
             });
+            document.getElementById(screenId).classList.add('active');
             
-            // Show selected screen
-            document.getElementById(screenId).classList.remove('hidden');
+            if (screenId !== navigationHistory[navigationHistory.length - 1]) {
+                navigationHistory.push(screenId);
+            }
         }
 
         function goBack() {
-            if (currentPath.length > 0) {
-                currentPath.pop();
-                
-                if (currentPath.length === 0) {
-                    goToStart();
-                } else if (currentPath.length === 1) {
-                    if (currentEducationType === 'eba') {
-                        showYears();
-                    } else {
-                        showScreen('efzDurationScreen');
-                    }
-                } else if (currentPath.length === 2) {
-                    if (currentEducationType === 'efz') {
-                        showYears();
-                    } else {
-                        showThemes();
-                    }
-                } else if (currentPath.length === 3) {
-                    showThemes();
-                }
-                
-                updateBreadcrumb();
+            if (navigationHistory.length > 1) {
+                navigationHistory.pop();
+                const previousScreen = navigationHistory[navigationHistory.length - 1];
+                showScreen(previousScreen);
             }
         }
 
-        function goToStart() {
-            currentPath = [];
-            currentEducationType = null;
-            currentDuration = null;
-            currentYear = null;
-            currentTheme = null;
+        function showThemes(education, year) {
+            currentEducation = education;
+            currentYear = year;
+            const themesKey = `${education}-${year}`;
+            const themesData = themes[themesKey] || [];
             
-            showScreen('startScreen');
-            hideBackNav();
-            updateBreadcrumb();
+            document.getElementById('themes-title').textContent = `${education.toUpperCase()} - ${year}. Lehrjahr - Themen`;
+            
+            const themesGrid = document.getElementById('themes-grid');
+            themesGrid.innerHTML = '';
+            
+            themesData.forEach((theme, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => showSprachhandlungen(theme.title);
+                card.innerHTML = `
+                    <h3>${theme.title}</h3>
+                    <p>${theme.description}</p>
+                `;
+                themesGrid.appendChild(card);
+            });
+            
+            showScreen('themes');
         }
 
-        // Initialize
-        createStars();
-        updateBreadcrumb();
+        function showSprachhandlungen(themeTitle) {
+            currentTheme = themeTitle;
+            document.getElementById('sprachhandlungen-title').textContent = `${themeTitle}`;
+            
+            const content = document.getElementById('sprachhandlungen-content');
+            content.innerHTML = '';
+            
+            const handlungen = sprachhandlungen[themeTitle] || [];
+            
+            handlungen.forEach((handlung, index) => {
+                const container = document.createElement('div');
+                container.className = 'sprachhandlung-container';
+                
+                container.innerHTML = `
+                    <div class="sprachhandlung-header">
+                        <h3>${handlung.title}</h3>
+                        <p style="color: var(--accent); font-size: 0.9rem; margin-top: 5px;">
+                            Lebenskontext: ${handlung.lebenskontext}
+                        </p>
+                    </div>
+                    
+                    <div class="info-buttons-container">
+                        <button class="info-point-btn" onclick="toggleInfoSection(event, 'scaffolds-${index}')">
+                            📌 Scaffolds anzeigen
+                        </button>
+                        <button class="info-point-btn" onclick="toggleInfoSection(event, 'zirkularitaet-${index}')">
+                            ↻ Zirkularität anzeigen
+                        </button>
+                    </div>
+                    
+                    <div id="scaffolds-${index}" class="scaffolds-section">
+                        <h3 style="color: var(--accent);">📌 Scaffolds - Unterstützungsmaterialien</h3>
+                        <div class="scaffolds-grid">
+                            <div class="scaffold-box">
+                                <h4>🗣️ Sprache</h4>
+                                <ul>
+                                    ${handlung.scaffolds.sprache.map(s => `<li>${s}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="scaffold-box">
+                                <h4>💻 Digital</h4>
+                                <ul>
+                                    ${handlung.scaffolds.digital.map(s => `<li>${s}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="scaffold-box">
+                                <h4>🌍 Gesellschaft</h4>
+                                <ul>
+                                    ${handlung.scaffolds.gesellschaft.map(s => `<li>${s}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="scaffold-box">
+                                <h4>🔑 Schlüssel</h4>
+                                <ul>
+                                    ${handlung.scaffolds.schluessel.map(s => `<li>${s}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="zirkularitaet-${index}" class="zirkularitaet-section">
+                        <h3 style="color: var(--accent);">↻ Zirkularität - Spiralförmige Verbindungen</h3>
+                        <div class="zirkularitaet-items">
+                            ${handlung.zirkularitaet.map(z => `
+                                <div class="zirkularitaet-item">
+                                    <strong>${z.thema}</strong>
+                                    <p>${z.verbindung}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="sprachhandlung-description">
+                        ${handlung.beschreibung}
+                    </div>
+                    
+                    <div class="competence-grid">
+                        <div>
+                            <button class="competence-button" onclick="toggleCompetence(event, 'sprache-${index}')">
+                                <h4>🗣️ Sprache & Kommunikation</h4>
+                                <p class="competence-preview">${handlung.kompetenzen.sprache.length} Kompetenzen</p>
+                                <span class="expand-icon">▶</span>
+                            </button>
+                            <div id="sprache-${index}" class="competence-details">
+                                <ul class="competence-list">
+                                    ${handlung.kompetenzen.sprache.map(k => `<li>${k}</li>`).join('')}
+                                </ul>
+                                <p class="competence-meta">
+                                    Modi: ${handlung.sprachmodi.join(', ')}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <button class="competence-button" onclick="toggleCompetence(event, 'digital-${index}')">
+                                <h4>💻 Digitale Kompetenzen</h4>
+                                <p class="competence-preview">${handlung.kompetenzen.digital.length} Kompetenzen</p>
+                                <span class="expand-icon">▶</span>
+                            </button>
+                            <div id="digital-${index}" class="competence-details">
+                                <ul class="competence-list">
+                                    ${handlung.kompetenzen.digital.map(k => `<li>${k}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <button class="competence-button" onclick="toggleCompetence(event, 'gesellschaft-${index}')">
+                                <h4>🌍 Gesellschaft</h4>
+                                <p class="competence-preview">${handlung.kompetenzen.gesellschaft.length} Kompetenzen</p>
+                                <span class="expand-icon">▶</span>
+                            </button>
+                            <div id="gesellschaft-${index}" class="competence-details">
+                                <ul class="competence-list">
+                                    ${handlung.kompetenzen.gesellschaft.map(k => `<li>${k}</li>`).join('')}
+                                </ul>
+                                <p class="competence-meta">
+                                    Aspekte: ${handlung.aspekte.join(', ')}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <button class="competence-button" onclick="toggleCompetence(event, 'schluessel-${index}')">
+                                <h4>🔑 Schlüsselkompetenzen</h4>
+                                <p class="competence-preview">${handlung.kompetenzen.schluessel.length} Kompetenzen</p>
+                                <span class="expand-icon">▶</span>
+                            </button>
+                            <div id="schluessel-${index}" class="competence-details">
+                                <ul class="competence-list">
+                                    ${handlung.kompetenzen.schluessel.map(k => `<li>${k}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tasks-section">
+                        <h3>✨ Authentische Aufgaben</h3>
+                        ${getAuthenticTasks(handlung.title)}
+                    </div>
+                `;
+                
+                content.appendChild(container);
+            });
+            
+            showScreen('sprachhandlungen');
+        }
+
+        function getAuthenticTasks(handlungTitle) {
+            const tasks = authenticTasks[handlungTitle] || [];
+            return tasks.map(task => `
+                <div class="task-card">
+                    <h4>
+                        <span class="task-level level-${task.level}">${task.level.toUpperCase()}</span>
+                        ${task.title}
+                    </h4>
+                    <p>${task.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function toggleInfoSection(event, sectionId) {
+            event.stopPropagation();
+            const button = event.currentTarget;
+            const section = document.getElementById(sectionId);
+            
+            // Toggle active state
+            button.classList.toggle('active');
+            section.classList.toggle('active');
+            
+            // Update button text
+            if (button.classList.contains('active')) {
+                button.innerHTML = button.innerHTML.replace('anzeigen', 'ausblenden');
+            } else {
+                button.innerHTML = button.innerHTML.replace('ausblenden', 'anzeigen');
+            }
+        }
+
+        function toggleCompetence(event, detailId) {
+            event.stopPropagation();
+            const button = event.currentTarget;
+            const details = document.getElementById(detailId);
+            
+            // Toggle active state
+            button.classList.toggle('active');
+            details.classList.toggle('active');
+            
+            // Close other open details in the same grid
+            const grid = button.closest('.competence-grid');
+            const allButtons = grid.querySelectorAll('.competence-button');
+            const allDetails = grid.querySelectorAll('.competence-details');
+            
+            allButtons.forEach((btn) => {
+                if (btn !== button) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            allDetails.forEach((detail) => {
+                if (detail !== details) {
+                    detail.classList.remove('active');
+                }
+            });
+        }
+
+        function toggleDashboard() {
+            const dashboard = document.getElementById('dashboard-modal');
+            dashboard.classList.toggle('active');
+        }
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Mark the clicked button as active
+            event.target.classList.add('active');
+        }
+
+        // Close dashboard when clicking outside
+        document.getElementById('dashboard-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleDashboard();
+            }
+        });
     </script>
 </body>
 </html>
